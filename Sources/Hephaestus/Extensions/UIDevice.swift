@@ -2,7 +2,7 @@
 
 import UIKit
 
-extension UIDevice {
+public extension UIDevice {
     
     var isIphonePlus: Bool {
         let model = modelName

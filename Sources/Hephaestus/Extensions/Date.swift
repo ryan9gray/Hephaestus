@@ -2,7 +2,7 @@
 import Foundation
 import UIKit
 
-extension Date {
+public extension Date {
     func dateByAddingDays(_ days: Int) -> Date {
         return dateByAdding(component: .day, value: days)
     }
@@ -17,7 +17,7 @@ extension Date {
     }
 }
 
-extension Date {
+public extension Date {
     init(year: Int, month: Int, day: Int) {
         let calendar = Calendar.current
         var dateComponent = DateComponents()

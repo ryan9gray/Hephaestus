@@ -8,9 +8,6 @@ private struct PackageData {
     struct TargetNames {
         static let main: String = "HefestosSandbox"
     }
-    struct ResourcesPaths {
-        static let main: String = "Resources"
-    }
     struct Dependencies {
         static let sqLite: String = "SQLite"
     }

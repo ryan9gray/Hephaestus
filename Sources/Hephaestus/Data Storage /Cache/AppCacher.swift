@@ -1,6 +1,6 @@
 import Foundation
 
-class AppCacher {
+open class AppCacher {
     static var mappable: MappableCacherType {
         return SqliteCacher.common
     }
@@ -12,10 +12,14 @@ class AppCacher {
         expirable.clearAllExpirable()
     }
 }
-struct CacheExpiration {
-    static let week        = TimeInterval(60 * 60 * 24 * 7)
-    static let day         = TimeInterval(60 * 60 * 24)
-    static let hour        = TimeInterval(60 * 60)
-    static let halfAnHour  = TimeInterval(60 * 30)
-    static let fiveMinutes = TimeInterval(60 * 5)
+
+public struct CacheExpiration {
+    public static let week        = TimeInterval(60 * 60 * 24 * 7)
+    public static let day         = TimeInterval(60 * 60 * 24)
+    public static let hour        = TimeInterval(60 * 60)
+    public static let halfAnHour  = TimeInterval(60 * 30)
+    public static let fiveMinutes = TimeInterval(60 * 5)
+}
+public protocol Cacheable {
+    var uniqueCacheIdentifier: String { get }
 }

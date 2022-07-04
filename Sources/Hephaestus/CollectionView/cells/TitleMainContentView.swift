@@ -1,25 +1,28 @@
 
 import UIKit
 
-final class TitleMainContentView: UIView, CellContentViewProtocol {
+public class TitleMainContentView: UIView, CellContentViewProtocol {
 
-    struct Model: CellContentViewModelProtocol, IdentifiableProtocol {
-        var callbackAction: ((Model) -> ())?
-        var isSelected: Bool = false {
+    public struct Model: CellContentViewModelProtocol, IdentifiableProtocol {
+        public var callbackAction: ((Model) -> ())?
+        public var isSelected: Bool = false {
             didSet {
                 callbackAction?(self)
             }
         }
-        let title: String
+        public let title: String
 
-        var id: String {
+        public var id: String {
             return title
+        }
+        public init(title: String) {
+            self.title = title
         }
     }
 
-    var isSelected: Bool = false
+    public var isSelected: Bool = false
 
-    var model: Model! {
+    public var model: Model! {
         didSet {
             titleMainView.text = model.title
         }
@@ -35,7 +38,8 @@ final class TitleMainContentView: UIView, CellContentViewProtocol {
 
     public init() {
         super.init(frame: .zero)
-
+        titleMainView.numberOfLines = 10
+        titleMainView.textAlignment = .center
         setupLayout()
     }
     func setupLayout() {

@@ -2,11 +2,11 @@
 import Foundation
 
 open class NetworkRequest: ServerRequestsLoging {
-    let endpoint: Endpoint
-    let body: Data?
-    let httpMethod: HTTPMethod
+    var endpoint: Endpoint
+    var body: Data?
+    var httpMethod: HTTPMethod
     
-    var isLogging: Bool = false
+    var isLogging: Bool = true
     var isLoggingToFile: Bool = false
     
     var fullRequestString: String {
@@ -16,20 +16,10 @@ open class NetworkRequest: ServerRequestsLoging {
     public init(
         endpoint: Endpoint,
         httpMethod: HTTPMethod,
-        body: Encodable? = nil
+        body: Data?
     ) {
         self.endpoint = endpoint
-        self.body = body?.encode()
-        self.httpMethod = httpMethod
-    }
-
-    public init(
-        endpoint: Endpoint,
-        httpMethod: HTTPMethod,
-        reqBody: Data? = nil
-    ) {
-        self.endpoint = endpoint
-        self.body = reqBody
+        self.body = body
         self.httpMethod = httpMethod
     }
     
@@ -40,7 +30,7 @@ open class NetworkRequest: ServerRequestsLoging {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = httpMethod.rawValue
         urlRequest.allHTTPHeaderFields = endpoint.headers
-        urlRequest.httpBody = body
+        urlRequest.httpBody = body.encode()
         return urlRequest
     }
 }

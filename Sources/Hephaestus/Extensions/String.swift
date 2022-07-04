@@ -5,7 +5,7 @@ import CryptoKit
 import Foundation
 import CommonCrypto
 
-extension String {
+public extension String {
     var localized: Self {
         NSLocalizedString(self, comment: "")
     }

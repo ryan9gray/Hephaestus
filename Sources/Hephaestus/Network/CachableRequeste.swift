@@ -1,16 +1,22 @@
 
 import Foundation
 
-protocol Cacheable {
-    var uniqueCacheIdentifier: String { get }
-}
+open class CachableRequeste: NetworkRequest, Cacheable {
+    var expirationInterval: TimeInterval
 
-open class CachableRequestable: NetworkRequest, Cacheable {
-    static func removeCache() {
-        AppCacher.expirable.removeValues(forCategory: String(describing: self))
+    public init(
+        endpoint: Endpoint,
+        httpMethod: HTTPMethod,
+        expirationInterval: TimeInterval,
+        body: Data?
+    ) {
+        self.expirationInterval = expirationInterval
+        super.init(endpoint: endpoint, httpMethod: httpMethod, body: body)
     }
-    var expirationInterval: TimeInterval {
-        CacheExpiration.hour
+
+    func removeCache() {
+       // AppCacher.expirable.removeValues(forCategory: String(describing: self))
+        AppCacher.expirable.removeValue(forId: uniqueCacheIdentifier)
     }
     func saveJsonToCache(fullJson: String) {
         AppCacher.expirable.saveValue(
@@ -19,6 +25,18 @@ open class CachableRequestable: NetworkRequest, Cacheable {
             expiration: Date(timeIntervalSinceNow: expirationInterval),
             category: String(describing: type(of: self))
         )
+    }
+    
+    func cachedResponse<T: Codable>() -> T? {
+        if
+            let jsonString = AppCacher.expirable.getValue(forId: uniqueCacheIdentifier, shoudDelete: true),
+            let data = jsonString.data(using: .utf8)
+        {
+            return try? JSONDecoder().decode(T.self, from: data)
+        } else {
+            removeCache()
+            return nil
+        }
     }
     
     func getJoinedDictionaryString(parameters: [String: Any]) -> String {
@@ -42,10 +60,9 @@ open class CachableRequestable: NetworkRequest, Cacheable {
         return parametersString
     }
 
-    var uniqueCacheIdentifier: String {
+    public var uniqueCacheIdentifier: String {
         guard
-            let data = body,
-            let params = data.toDictionary()
+            let params = body?.dictionary
         else { return "" }
         
         var parametersString: String = fullRequestString

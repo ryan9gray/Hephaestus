@@ -1,7 +1,7 @@
 
 import UIKit
 
-extension FileManager {
+public extension FileManager {
     
     func fileExistsAtURL(_ url: URL) -> Bool {
         return fileExists(atPath: url.path)

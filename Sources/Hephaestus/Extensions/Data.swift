@@ -1,7 +1,7 @@
 
 import Foundation
 
-extension Dictionary {
+public extension Dictionary {
 
     func retriveData() -> Result<Data, Error> {
            return Result { try JSONSerialization.data(withJSONObject: self) }
@@ -29,7 +29,7 @@ extension Dictionary {
         return try? JSONDecoder().decode(T.self, from: data)
     }
 }
-extension Data {
+public extension Data {
     func decode<T: Decodable>() -> T? {
         do {
             return try JSONDecoder().decode(T.self, from: self)
@@ -49,18 +49,52 @@ extension Data {
         }
         return nil
     }
-    func toDictionary(options: JSONSerialization.ReadingOptions = []) -> [String: Any]? {
+    func toDictionary(options: JSONSerialization.ReadingOptions = [.allowFragments]) -> [String: Any]? {
           return to(type: [String: Any].self, options: options)
       }
 
-      func to<T>(type: T.Type, options: JSONSerialization.ReadingOptions = []) -> T? {
+      func to<T>(type: T.Type, options: JSONSerialization.ReadingOptions = [.allowFragments]) -> T? {
           guard let result = try? JSONSerialization.jsonObject(with: self, options: options) as? T else {
               return nil
           }
           return result
       }
+    var dictionary: [String: Any]? {
+          do {
+              return try JSONSerialization.jsonObject(with: self) as? [String: Any]
+          } catch {
+              print(error.localizedDescription)
+          }
+          return nil
+    }
 }
-enum NetworkServiceError: LocalizedError {
+public extension Dictionary {
+    func percentEncoded() -> Data? {
+        map { key, value in
+            let escapedKey = "\(key)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
+            let escapedValue = "\(value)".addingPercentEncoding(withAllowedCharacters: .urlQueryValueAllowed) ?? ""
+            return escapedKey + "=" + escapedValue
+        }
+        .joined(separator: "&")
+        .data(using: .utf8)
+    }
+}
+public extension Array where Element == String {
+    func joinedWithAmpersands() -> String {
+        joined(separator: "&")
+    }
+}
+public extension CharacterSet {
+    static let urlQueryValueAllowed: CharacterSet = {
+        let generalDelimitersToEncode = ":#[]@" // does not include "?" or "/" due to RFC 3986 - Section 3.4
+        let subDelimitersToEncode = "!$&'()*+,;="
+        
+        var allowed: CharacterSet = .urlQueryAllowed
+        allowed.remove(charactersIn: "\(generalDelimitersToEncode)\(subDelimitersToEncode)")
+        return allowed
+    }()
+}
+public enum NetworkServiceError: LocalizedError {
     case decodingError(String)
     case encodingError
     case unsuccessStatus(Int)

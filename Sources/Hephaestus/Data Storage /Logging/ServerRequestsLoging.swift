@@ -5,7 +5,7 @@ protocol ServerRequestsLoging {
 
 }
 
-extension ServerRequestsLoging where Self: CachableRequestable {
+extension ServerRequestsLoging where Self: CachableRequeste {
 
     func saveLogToCache(
         requestLogModel: RequestLogModel,
